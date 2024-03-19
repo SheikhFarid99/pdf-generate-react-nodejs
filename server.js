@@ -6,7 +6,7 @@ const body_parser = require('body-parser')
 const mongoose = require('mongoose')
 const order_model = require('./order_model')
 const path = require('path')
-const puppeteer = require("puppeteer")
+const puppeteer = require("'puppeteer'")
 const { invoice_template } = require('./invoice_template')
 
 dotenv.config()
