@@ -51,14 +51,14 @@ app.post('/api/order', async (req, res) => {
             await browser.close()
 
         } catch (error) {
-            console.log(error)
-            return res.status(500).json({ message: 'Success but something wrong , dont Worroy' });
+            console.log(error.message)
+            return res.status(500).json({ message:error.message });
         }
 
         return res.status(201).json({ order, message: "Order success" })
     } catch (error) {
-        console.log(error)
-        return res.status(500).json({ message: "Internal server error" })
+        console.log(error.message)
+        return res.status(500).json({ message: error.message })
     }
 })
 
