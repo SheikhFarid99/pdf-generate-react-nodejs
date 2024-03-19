@@ -31,7 +31,7 @@ app.post('/api/order', async (req, res) => {
             }
         })
 
-        const browser = await puppeteer.launch();
+        const browser = await puppeteer.launch({ headless: true || 'new' });
         const page = await browser.newPage();
 
         const html = invoice_template(order)
@@ -52,7 +52,7 @@ app.post('/api/order', async (req, res) => {
 
         } catch (error) {
             console.log(error.message)
-            return res.status(500).json({ message:error.message });
+            return res.status(500).json({ message: error.message });
         }
 
         return res.status(201).json({ order, message: "Order success" })
