@@ -31,7 +31,16 @@ app.post('/api/order', async (req, res) => {
             }
         })
 
-        const browser = await puppeteer.launch({ headless: true || 'new' });
+        const browser = await puppeteer.launch({
+            args: [
+                "--disable-setuid-sandbox",
+                "--no-sandbox",
+                "--single-process",
+                "--no-zygote",
+            ],
+            executablePath: puppeteer.executablePath()
+        });
+
         const page = await browser.newPage();
 
         const html = invoice_template(order)
