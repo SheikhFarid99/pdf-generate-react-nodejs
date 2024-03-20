@@ -120,7 +120,7 @@ app.get('/api/invoice/download/:order_id', async (req, res) => {
     const { order_id } = req.params
 
     //const file = __dirname + `/./files/invoice/${order_id}.pdf`
-    const file = `http://res.cloudinary.com/dpj4vsqbo/image/upload/v1710850049/pdf/${order_id}.pdf`
+    const file = `https://res.cloudinary.com/dpj4vsqbo/image/upload/v1710850049/pdf/${order_id}.pdf`
 
     // res.set({
     //     "Content-Type": 'application/pdf',
