@@ -8,6 +8,8 @@ const order_model = require('./order_model')
 const path = require('path')
 const puppeteer = require("puppeteer")
 const { invoice_template } = require('./invoice_template')
+const cloudinary = require('cloudinary').v2
+const streamifier = require('streamifier')
 
 dotenv.config()
 app.use(cors())
@@ -47,16 +49,34 @@ app.post('/api/order', async (req, res) => {
 
         await page.setContent(html, { awitUntil: 'domcontentloaded' })
 
-        const invoice_name = `${order.id}.pdf`
-        const dist = `./files/invoice/${invoice_name}`
+        //const invoice_name = `${order.id}.pdf`
+        //const dist = __dirname + `/./files/invoice/${invoice_name}`
 
         try {
 
-            await page.pdf({
+            cloudinary.config({
+                cloud_name: process.env.cloud_name,
+                api_key: process.env.api_key,
+                api_secret: process.env.api_secret,
+            })
+
+            const result = await page.pdf({
                 format: 'A4',
-                path: dist,
                 printBackground: true
             })
+
+            let cld_upload_stream = cloudinary.uploader.upload_stream(
+                {
+                    folder: "pdf",
+                    public_id: order.id
+                },
+                function (error, result) {
+                    console.log(error);
+                }
+            );
+
+            streamifier.createReadStream(result).pipe(cld_upload_stream);
+
             await browser.close()
 
         } catch (error) {
@@ -85,10 +105,11 @@ app.get('/api/order/:order_id', async (req, res) => {
     const { order_id } = req.params
 
     try {
-        const { order_id } = req.params
+
         const order = await order_model.findById(order_id)
 
         return res.status(200).json({ order })
+
     } catch (error) {
         return res.status(500).json({ message: "Internal server error" })
     }
@@ -98,13 +119,15 @@ app.get('/api/invoice/download/:order_id', async (req, res) => {
 
     const { order_id } = req.params
 
-    const file = __dirname + `/./files/invoice/${order_id}.pdf`
+    //const file = __dirname + `/./files/invoice/${order_id}.pdf`
+    const file = `http://res.cloudinary.com/dpj4vsqbo/image/upload/v1710850049/pdf/${order_id}.pdf`
 
-    res.set({
-        "Content-Type": 'application/pdf',
-        "Content-Length": file.length
-    })
-    res.sendFile(file)
+    // res.set({
+    //     "Content-Type": 'application/pdf',
+    //     "Content-Length": file.length
+    // })
+    // res.sendFile(file)
+    return res.status(200).json({ url: file })
 
 })
 

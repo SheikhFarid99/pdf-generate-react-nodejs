@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { useParams,Link } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
 import axios from 'axios'
 import moment from 'moment'
 import { saveAs } from 'file-saver'
-import {base_url} from './config'
+import { base_url } from './config'
 
 const Invoice = () => {
 
@@ -12,6 +12,7 @@ const Invoice = () => {
     const { order_id } = useParams()
 
     const get_order = async () => {
+
         try {
             const { data } = await axios.get(`${base_url}/api/order/${order_id}`)
             set_order(data.order)
@@ -30,14 +31,24 @@ const Invoice = () => {
 
     const invoice_download = async () => {
         try {
-            const { data } = await axios.get(`${base_url}/api/invoice/download/${order_id}`, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                },
-                responseType: 'arraybuffer'
-            })
-            const blob = new Blob([data], { type: 'application/pdf' })
-            saveAs(blob, `${order_id}.pdf`)
+            // const { data } = await axios.get(`${base_url}/api/invoice/download/${order_id}`, {
+            //     headers: {
+            //         'Content-Type': 'multipart/form-data'
+            //     },
+            //     responseType: 'arraybuffer'
+            // })
+            // const blob = new Blob([data], { type: 'application/pdf' })
+            // saveAs(blob, `${order_id}.pdf`)
+
+            const { data } = await axios.get(`${base_url}/api/invoice/download/${order_id}`)
+            // const blob = new Blob([data], { type: 'application/pdf' })
+            console.log(data)
+            saveAs(data.url, `${order_id}.pdf`)
+
+            // const a = document.getElementById('a')
+            // a.href = data.url
+            // a.download()
+            // a.click()
 
         } catch (error) {
             console.log(error)
